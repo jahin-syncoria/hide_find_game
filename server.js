@@ -3,10 +3,10 @@ const http = require("http");
 const express = require("express");
 const socketio = require("socket.io");
 const formatMessage = require("./utils/messages");
-const createAdapter = require("@socket.io/redis-adapter").createAdapter;
-const redis = require("redis");
+// const createAdapter = require("@socket.io/redis-adapter").createAdapter;
+// const redis = require("redis");
 require("dotenv").config();
-const { createClient } = redis;
+// const { createClient } = redis;
 const {
   userJoin,
   getCurrentUser,
@@ -24,12 +24,12 @@ app.use(express.static(path.join(__dirname, "public")));
 const botName = "MISL Bot";
 
 // Create Redis client
-const redisClient = createClient();
+// const redisClient = createClient();
 
-(async () => {
-  await redisClient.connect();
-  io.adapter(createAdapter(redisClient, redisClient.duplicate()));
-})();
+// (async () => {
+//   await redisClient.connect();
+//   io.adapter(createAdapter(redisClient, redisClient.duplicate()));
+// })();
 
 // Run when client connects
 io.on("connection", (socket) => {
@@ -68,18 +68,30 @@ io.on("connection", (socket) => {
   });
 
   // Listen for user type change
-  socket.on("userTypeChange", ({ userId, userType }) => {
-    console.log("userTypeChange funtion")
-    const user = getCurrentUser(userId);
+  socket.on("userTypeChange", (userobj, userType) => {
+    const user = getCurrentUser(userobj.id);
     if (user) {
       user.userType = userType;
+      // Broadcast when a user connects
+      // socket.broadcast
+      //   .to(user.room)
+      //   .emit(
+      //     "message",
+      //     formatMessage(botName, `${user.username} is ${user.userType}`)
+      //   );
+      io.to(user.room).emit(
+      "message",
+      formatMessage(botName, `${user.username} is ${userType}`)
+    );
+
+
+
       io.to(user.room).emit("roomUsers", {
         room: user.room,
         users: getRoomUsers(user.room),
       });
       // Save updated user type to Redis
-      console.log("+++++++",userId)
-      redisClient.hSet(`user:${userId}`, "userType", userType);
+      // redisClient.hSet(`user:${userId}`, "userType", userType);
     }
   });
 

@@ -8,7 +8,7 @@ const answer = document.getElementById('answer');
 
 // Function to get user type
 function getUserType() {
-  return localStorage.getItem('userType') || 'solver'; // Default to 'solver' if userType is not set
+  return localStorage.getItem('userType') || 'Solver'; // Default to 'solver' if userType is not set
 }
 
 
@@ -41,16 +41,19 @@ const socket = io();
 socket.emit('joinRoom', { username, room });
 
 // Function to set user type
-function setUserType(userType, userid, userName, userList) {
-  //console.log(socket.id);
-  socket.emit('userTypeChange',  {userid, userType, userName, userList}); // Emit userTypeChange event
+function setUserType(user,userType, userid, userName, userList) {
+
+  socket.emit('userTypeChange',  user, userType); // Emit userTypeChange event
   localStorage.setItem('userType', userType);
-  console.log(userType);
-  if(userType == 'questioner'){
+  // console.log(userType);
+  if(userType == 'Questioner'){
     answer.hidden = false
   }else{
     answer.hidden = true
   }
+
+
+
 }
 
 // Get room and users
@@ -146,16 +149,15 @@ function createSelectionField(user, allUsers) {
       select.disabled = true
     }
   select.addEventListener('change', function () {
-    console.log("Set User Type change function  "+ user.id)
-    const selectedValue = parseInt(this.value);
-    console.log("Set User Type change function  "+ selectedValue)
+    var selectedValue = parseInt(this.value);
 
     if(user.username === username){
-      setUserType(selectedValue === 2 ? 'questioner' : 'solver', user.id, user.username, allUsers);
+      setUserType(user,selectedValue === 2 ? 'Questioner' : 'Solver', user.id, user.username, allUsers);
     }
-    
+
   });
 
+  console
   // Create options for the select element
   const options = ['Solver', 'Questioner']; // You can customize this array as needed
   options.forEach((optionText, index) => {
@@ -166,7 +168,8 @@ function createSelectionField(user, allUsers) {
   });
 
   // Set selected value based on user type
-  select.value = getUserType() === 'questioner' ? 2 : 1;
+    console.log("Set Value")
+  select.value = getUserType() === 'Questioner' ? 2 : 1;
   return select;
 }
 
