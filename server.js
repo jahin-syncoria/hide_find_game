@@ -42,7 +42,7 @@ io.on("connection", (socket) => {
     // Welcome current user
     socket.emit(
       "message",
-      formatMessage(botName, "Welcome to Hide'em & Find'em!")
+      formatMessage(botName,NaN, "Welcome to Hide'em & Find'em!")
     );
 
     // Broadcast when a user connects
@@ -50,7 +50,7 @@ io.on("connection", (socket) => {
       .to(user.room)
       .emit(
         "message",
-        formatMessage(botName, `${user.username} has joined the chat`)
+        formatMessage(botName,NaN,`${user.username} has joined the chat`)
       );
 
     // Send users and room info
@@ -64,7 +64,23 @@ io.on("connection", (socket) => {
   socket.on("chatMessage", (msg) => {
     const user = getCurrentUser(socket.id);
 
-    io.to(user.room).emit("message", formatMessage(user.username, msg));
+    io.to(user.room).emit("message", formatMessage(user.username,user.userType, msg));
+  });
+
+   socket.on("chatbotMessage", (msg) => {
+
+     socket.emit(
+      "message",
+      formatMessage(botName,NaN, msg)
+    );
+  });
+
+  // Listen for chatAnswerMessage
+  socket.on("chatAnswerMessage", (ansMsg) => {
+    const user = getCurrentUser(socket.id);
+    if (user.userType == 'Questioner') {
+      io.to(user.room).emit("ansMessage",  formatMessage(user.username,user.userType, ansMsg));
+    }
   });
 
 
@@ -89,7 +105,7 @@ io.on("connection", (socket) => {
       //   );
       io.to(user.room).emit(
       "message",
-      formatMessage(botName, `${user.username} is ${userType}`)
+      formatMessage(botName,NaN, `${user.username} is ${userType}`)
     );
     // if (userType === "Questioner") {
     //   userList.forEach(otherUser => {
@@ -119,7 +135,7 @@ io.on("connection", (socket) => {
     if (user) {
       io.to(user.room).emit(
         "message",
-        formatMessage(botName, `${user.username} has left the chat`)
+        formatMessage(botName, NaN,`${user.username} has left the chat`)
       );
 
       // Send users and room info

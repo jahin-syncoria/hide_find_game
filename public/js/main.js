@@ -66,6 +66,12 @@ socket.on('message', (message) => {
   chatMessages.scrollTop = chatMessages.scrollHeight;
 });
 
+// Message from server
+socket.on('ansMessage', (message) => {
+  console.log(message);
+  answer.value = message.text;
+});
+
 
 // Message submit
 chatForm.addEventListener('submit', (e) => {
@@ -83,6 +89,16 @@ chatForm.addEventListener('submit', (e) => {
   // Emit message to server
   socket.emit('chatMessage', msg);
 
+  let ansMsg = e.target.elements.answer.value;
+
+  ansMsg = ansMsg.trim();
+
+  if (!ansMsg) {
+    return false;
+  }
+  socket.emit('chatAnswerMessage', ansMsg);
+
+  e.target.elements.answer.value = ansMsg
   // Clear input
   e.target.elements.msg.value = '';
   e.target.elements.msg.focus();
@@ -108,7 +124,11 @@ function outputMessage(message) {
     var delayInMilliseconds = 2000; //1 second
 
     setTimeout(function() {
-      alert("The answer is correct");
+      // alert("The answer is correct");
+      socket.emit(
+      "chatbotMessage",
+      `${message.username} is Correct`
+    );
     }, delayInMilliseconds);
     
   }
