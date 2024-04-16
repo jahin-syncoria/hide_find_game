@@ -43,16 +43,11 @@ socket.emit('joinRoom', { username, room });
 // Function to set user type
 function setUserType(user,userType, userid, userName, userList) {
 
-  socket.emit('userTypeChange',  user, userType); // Emit userTypeChange event
+  socket.emit('userTypeChange',  user, userType,userList); // Emit userTypeChange event
   localStorage.setItem('userType', userType);
   // console.log(userType);
-  if(userType == 'Questioner'){
-    answer.hidden = false
-  }else{
-    answer.hidden = true
-  }
-
-
+  // Show or hide answer based on userType
+  answer.hidden = (userType === 'Questioner') ? false : true;
 
 }
 
@@ -145,20 +140,9 @@ function createSelectionField(user, allUsers) {
   console.log(select.id)
   select.classList.add('form-control'); // Add class to select element
   select.style.marginLeft = '30px'; // Add class to select element
-  if(user.username !== username){
-      select.disabled = true
-    }
-  select.addEventListener('change', function () {
-    var selectedValue = parseInt(this.value);
-
-    if(user.username === username){
-      setUserType(user,selectedValue === 2 ? 'Questioner' : 'Solver', user.id, user.username, allUsers);
-    }
-
-  });
-
-  console
-  // Create options for the select element
+  if (user.username !== username) {
+    select.disabled = true
+  }
   const options = ['Solver', 'Questioner']; // You can customize this array as needed
   options.forEach((optionText, index) => {
     const option = document.createElement('option');
@@ -167,9 +151,56 @@ function createSelectionField(user, allUsers) {
     select.appendChild(option); // Append option to select element
   });
 
-  // Set selected value based on user type
-    console.log("Set Value")
-  select.value = getUserType() === 'Questioner' ? 2 : 1;
+  select.addEventListener('change', function () {
+    const selectedValue = parseInt(this.value);
+    let is_change = true
+    if (selectedValue === 2) {
+      allUsers.forEach(otherUser => {
+          if (otherUser.id !== user.id) {
+            console.log(otherUser.username+"+++"+otherUser.userType)
+            if (otherUser.userType === 'Questioner'){
+              alert("There is already an Questioner")
+              is_change = false
+              select.value = 1;
+              return select
+
+
+            }
+          }
+          });
+      };
+
+
+    if (is_change === true) {
+      console.log("+++", is_change);
+      if (user.username === username) {
+        console.log("+++", selectedValue);
+        setUserType(user, selectedValue === 2 ? 'Questioner' : 'Solver', user.id, user.username, allUsers);
+      }
+    }
+
+  });
+
+
+
+  // Create options for the select element
+    console.log("-=-=", user.username+"=="+user.userType);
+    console.log("Current User", username);
+    if (user.username === username && user.userType === 'Questioner') {
+      select.value = 2;//Questioner
+    }
+    if (user.username !== username && user.userType === 'Questioner') {
+      select.value = 2;
+    }
+    if (user.username !== username && user.userType === 'undefined') {
+      select.value = 1; // Other user Solver
+    }
+
+    if (select.value === 'undefined') {
+      select.value = 1;
+    }
+
+  console.log("Select Value=="+user.username+"-"+select.value+"-"+user.userType)
   return select;
 }
 

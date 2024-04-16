@@ -67,8 +67,16 @@ io.on("connection", (socket) => {
     io.to(user.room).emit("message", formatMessage(user.username, msg));
   });
 
+
+  socket.on("SingleuserTypeChange", (userobj, userType) => {
+    const user = getCurrentUser(userobj.id);
+    if (user) {
+      user.userType = userType;
+    }
+  });
+
   // Listen for user type change
-  socket.on("userTypeChange", (userobj, userType) => {
+  socket.on("userTypeChange", (userobj, userType,userList) => {
     const user = getCurrentUser(userobj.id);
     if (user) {
       user.userType = userType;
@@ -83,7 +91,17 @@ io.on("connection", (socket) => {
       "message",
       formatMessage(botName, `${user.username} is ${userType}`)
     );
-
+    // if (userType === "Questioner") {
+    //   userList.forEach(otherUser => {
+    //     if (otherUser.id !== user.id) {
+    //       // Emit userTypeChange event for other users
+    //       // socket.emit('userTypeChange', otherUser, 'Solver');
+    //       // // Set userType in local storage for other users (optional)
+    //       // localStorage.setItem(`userType_${otherUser.id}`, 'Solver');
+    //       otherUser.userType = 'Solver';
+    //     }
+    //   });
+    // }
 
 
       io.to(user.room).emit("roomUsers", {
