@@ -21,7 +21,7 @@ const io = socketio(server);
 // Set static folder
 app.use(express.static(path.join(__dirname, "public")));
 
-const botName = "MISL Bot";
+const botName = "Quiz Master";
 
 // Create Redis client
 // const redisClient = createClient();
@@ -42,7 +42,7 @@ io.on("connection", (socket) => {
     // Welcome current user
     socket.emit(
       "message",
-      formatMessage(botName,NaN, "Welcome to Hide'em & Find'em!")
+      formatMessage(botName,NaN, "Welcome to Hider/Finder")
     );
 
     // Broadcast when a user connects
@@ -78,7 +78,7 @@ io.on("connection", (socket) => {
   // Listen for chatAnswerMessage
   socket.on("chatAnswerMessage", (ansMsg) => {
     const user = getCurrentUser(socket.id);
-    if (user.userType == 'Questioner') {
+    if (user.userType == 'Hider') {
       io.to(user.room).emit("ansMessage",  formatMessage(user.username,user.userType, ansMsg));
     }
   });
@@ -107,14 +107,14 @@ io.on("connection", (socket) => {
       "message",
       formatMessage(botName,NaN, `${user.username} is ${userType}`)
     );
-    // if (userType === "Questioner") {
+    // if (userType === "Hider") {
     //   userList.forEach(otherUser => {
     //     if (otherUser.id !== user.id) {
     //       // Emit userTypeChange event for other users
-    //       // socket.emit('userTypeChange', otherUser, 'Solver');
+    //       // socket.emit('userTypeChange', otherUser, 'Finder');
     //       // // Set userType in local storage for other users (optional)
-    //       // localStorage.setItem(`userType_${otherUser.id}`, 'Solver');
-    //       otherUser.userType = 'Solver';
+    //       // localStorage.setItem(`userType_${otherUser.id}`, 'Finder');
+    //       otherUser.userType = 'Finder';
     //     }
     //   });
     // }

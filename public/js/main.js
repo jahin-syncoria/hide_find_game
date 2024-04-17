@@ -8,7 +8,7 @@ const answer = document.getElementById('answer');
 
 // Function to get user type
 function getUserType() {
-  return localStorage.getItem('userType') || 'Solver'; // Default to 'solver' if userType is not set
+  return localStorage.getItem('userType') || 'Finder'; // Default to 'Finder' if userType is not set
 }
 
 
@@ -47,7 +47,7 @@ function setUserType(user,userType, userid, userName, userList) {
   localStorage.setItem('userType', userType);
   // console.log(userType);
   // Show or hide answer based on userType
-  answer.hidden = (userType === 'Questioner') ? false : true;
+  answer.hidden = (userType === 'Hider') ? false : true;
 
 }
 
@@ -163,7 +163,7 @@ function createSelectionField(user, allUsers) {
   if (user.username !== username) {
     select.disabled = true
   }
-  const options = ['Solver', 'Questioner']; // You can customize this array as needed
+  const options = ['Finder', 'Hider']; // You can customize this array as needed
   options.forEach((optionText, index) => {
     const option = document.createElement('option');
     option.value = index + 1; // Assigning values to options
@@ -178,8 +178,8 @@ function createSelectionField(user, allUsers) {
       allUsers.forEach(otherUser => {
           if (otherUser.id !== user.id) {
             console.log(otherUser.username+"+++"+otherUser.userType)
-            if (otherUser.userType === 'Questioner'){
-              alert("There is already an Questioner")
+            if (otherUser.userType === 'Hider'){
+              alert("There is already an Hider")
               is_change = false
               select.value = 1;
               return select
@@ -195,7 +195,7 @@ function createSelectionField(user, allUsers) {
       console.log("+++", is_change);
       if (user.username === username) {
         console.log("+++", selectedValue);
-        setUserType(user, selectedValue === 2 ? 'Questioner' : 'Solver', user.id, user.username, allUsers);
+        setUserType(user, selectedValue === 2 ? 'Hider' : 'Finder', user.id, user.username, allUsers);
       }
     }
 
@@ -206,14 +206,14 @@ function createSelectionField(user, allUsers) {
   // Create options for the select element
     console.log("-=-=", user.username+"=="+user.userType);
     console.log("Current User", username);
-    if (user.username === username && user.userType === 'Questioner') {
-      select.value = 2;//Questioner
+    if (user.username === username && user.userType === 'Hider') {
+      select.value = 2;//Hider
     }
-    if (user.username !== username && user.userType === 'Questioner') {
+    if (user.username !== username && user.userType === 'Hider') {
       select.value = 2;
     }
     if (user.username !== username && user.userType === 'undefined') {
-      select.value = 1; // Other user Solver
+      select.value = 1; // Other user Finder
     }
 
     if (select.value === 'undefined') {
@@ -228,13 +228,13 @@ function createSelectionField(user, allUsers) {
 document.getElementById('leave-btn').addEventListener('click', () => {
   const leaveRoom = confirm('Are you sure you want to leave the chatroom?');
   if (leaveRoom) {
-     localStorage.setItem('userType', 'Solver');
+     localStorage.setItem('userType', 'Finder');
     window.location = '../index.html';
   }
 });
 
 window.addEventListener('beforeunload',
     function (event) {
-      window.localStorage.userType='Solver';
+      window.localStorage.userType='Finder';
       // Cancel the event
     });
