@@ -159,7 +159,7 @@ function createSelectionField(user, allUsers) {
   select.id = `selection_${user.id}`; // Set ID for select element
   console.log(select.id)
   select.classList.add('form-control'); // Add class to select element
-  select.style.marginLeft = '30px'; // Add class to select element
+  // select.style.marginLeft = '30px'; // Add class to select element
   if (user.username !== username) {
     select.disabled = true
   }
